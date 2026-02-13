@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router";
-import { useState, type FormEvent } from "react";
+import { type FormEvent, useState } from 'react';
 
 import Navbar from "~/components/Navbar";
-import FileUploader from "~/components/FileUploader";
+import { generateUUID } from "~/lib/utlis";
 import { usePuterStore } from "~/lib/puter";
 import { convertPdfToImage } from "~/lib/pdf2img";
-import { generateUUID } from "~/lib/utlis";
-import { AIResponseFormat, prepareInstructions } from "~/constants";
+import { prepareInstructions, AIResponseFormat } from "~/constants";
+import FileUploader from "~/components/FileUploader";
 
 const Upload = () => {
   const { auth, isLoading, fs, ai, kv } = usePuterStore();
   const navigate = useNavigate();
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusText, setStatusText] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -56,7 +56,8 @@ const Upload = () => {
     const feedback = await ai.feedback(
       uploadedFile.path,
       prepareInstructions({ jobTitle, jobDescription, AIResponseFormat })
-    )
+    );
+
     if (!feedback) return setStatusText('Error: Failed to analyze resume');
 
     const feedbackText = typeof feedback.message.content === 'string'
@@ -69,7 +70,7 @@ const Upload = () => {
     console.log(data);
     navigate(`/resume/${uuid}`);
   };
-  
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget.closest('form');
@@ -85,7 +86,7 @@ const Upload = () => {
 
     handleAnalyze({ companyName, jobTitle, jobDescription, file });
   };
-  
+
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
